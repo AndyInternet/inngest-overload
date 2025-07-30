@@ -1,30 +1,30 @@
 import { NextFunction, Request, Response } from "express";
 import { inngest } from "../services/inngest";
 
-export const index = (req: Request, res: Response) => {
-  res.json({ message: "New app, who dis?" });
-};
-
-export const trigger = async (
+export const index = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const toQueue = Number(req.params.number);
-  const delayTime = Number(req.params.delayTime);
+  const { toQueue: toQueueStr, runDuration: runDurationStr } = req.body;
+  const toQueue = Number(toQueueStr);
+  const runDuration = Number(runDurationStr);
+
   if (isNaN(toQueue)) {
     next(new Error("number required"));
   }
-  if (isNaN(delayTime)) {
+
+  if (isNaN(runDuration)) {
     next(new Error("duration required"));
   }
+
   try {
     await Promise.all(
       Array.from({ length: toQueue }, () => {
         inngest.send({
           name: "run",
           data: {
-            delayTime,
+            runDuration,
           },
         });
       })
@@ -32,5 +32,5 @@ export const trigger = async (
   } catch (err) {
     next(err);
   }
-  res.json({ message: `${toQueue} events sent!` });
+  res.json({ message: `${toQueue} ${runDuration}ms events sent` });
 };

@@ -8,8 +8,8 @@ const run = inngest.createFunction(
   { id: "run" },
   { event: "run" },
   async ({ event, step }) => {
-    const delayTime = event.data.delayTime;
-    await delay(delayTime);
+    const runDuration = event.data.runDuration;
+    await delay(runDuration);
     return { message: `function processed` };
   }
 );

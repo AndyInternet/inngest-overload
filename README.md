@@ -43,7 +43,27 @@ the Inngest self-hosting queue.
 
 ## Usage
 
-Once the application is running, you can access it at `http://localhost:3000`. The root route will display a welcome message.
+1. Start the application in dev mode
+
+   ```
+   npm run dev
+   ```
+
+2. Start the inngest dev server
+
+   ```
+   npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+   ```
+
+3. Send a `POST` request to `http://localhost:3000` with the following JSON body
+   ```json
+   {
+     "toQueue": 1000,
+     "runDuration": 100
+   }
+   ```
+   `toQueue`: the number of items to queued
+   `runDuration`: the time in ms each item will take to process
 
 ## Project Structure
 
