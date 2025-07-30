@@ -1,6 +1,7 @@
-# My Express App
+# Inngest Overload
 
-This is a simple Express application built with TypeScript. It serves as a starting point for building web applications using Node.js and Express.
+This is a simple Express application built with TypeScript. It is my first use of the Inngest SDK and it will create functions that are designed to fill and overload
+the Inngest self-hosting queue.
 
 ## Table of Contents
 
