@@ -4,7 +4,7 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
 
 ## Features
 
-- **Web Interface**: Modern dark-themed dashboard for easy load testing (I vibe coded this 🤘)
+- **Web Interface**: Modern dark-themed dashboard for easy load testing (I vibe coded this 🤘, thanks Claude)
 - **Configurable Workloads**: Control queue size, duration, CPU usage, and concurrency
 - **Real-time Feedback**: See results and responses immediately
 - **Inngest Integration**: Built specifically for testing Inngest queue systems
@@ -50,6 +50,7 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
    ```
 
    Then edit `.env` and add your Inngest keys:
+
    - `INNGEST_EVENT_KEY`: Your Inngest event key
    - `INNGEST_SIGNING_KEY`: Your Inngest signing key
 
@@ -60,7 +61,32 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
 
 ## Usage
 
-### Option 1: Web Interface (Recommended)
+### Option 1: Docker Compose (Recommended)
+
+1. Update the Inngest keys in `docker-compose.yaml`:
+
+   - Update the `INNGEST_EVENT_KEY` with an actual Inngest event key
+   - Replace the `INNGEST_SIGNING_KEY` with an actual Inngest signing key
+   - These keys must be hexadecimal strings
+
+2. Start the entire stack with Docker Compose:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+   This will start:
+
+   - The main application on port 3000
+   - Inngest server on ports 8288 (API) and 8289 (UI)
+   - PostgreSQL database on port 5432
+   - Redis cache on port 6379
+
+3. Open two browser tabs and navigate to:
+   http://localhost:3000 and
+   http://localhost:8288
+
+### Option 2: Web Interface (Development)
 
 1. Start the application in development mode:
 
@@ -74,20 +100,11 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
    npm run inngest
    ```
 
-3. Open your browser and navigate to:
+3. Open two browser tabs and navigate to:
+   http://localhost:3000 and
+   http://localhost:8288
 
-   ```
-   http://localhost:3000
-   ```
-
-4. Use the web interface to configure and trigger your load tests with:
-   - **Number of Events**: How many events to queue (1-1,000,000)
-   - **Run Duration**: How long each event should run (100-600,000ms)
-   - **CPU Usage**: Light or Heavy CPU-bound processing
-   - **Concurrency Limit**: 0 (no limit), 1 (single thread), 10 (limited), 25 (moderate), or 50 (high)
-   - **Enable Steps**: Include steps in the event processing
-
-### Option 2: API Endpoint
+### Option 3: API Endpoint
 
 Send a `POST` request to `http://localhost:3000/trigger` with the following JSON body:
 
@@ -120,8 +137,17 @@ Triggers a configurable number of Inngest events for load testing.
 ```json
 {
   "message": "50 events sent",
-  "runDuration": 1000,
-  "cpuUsage": "heavy"
+  "sentData": {
+    "toQueue": 50,
+    "runDuration": 1000,
+    "cpuUsage": "heavy",
+    "concurrencyLimit": 10,
+    "steps": true
+  },
+  "response": {
+    "runDuration": 1000,
+    "cpuUsage": "heavy"
+  }
 }
 ```
 
