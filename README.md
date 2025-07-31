@@ -58,12 +58,16 @@ the Inngest self-hosting queue.
 3. Send a `POST` request to `http://localhost:3000` with the following JSON body
    ```json
    {
-     "toQueue": 1000,
-     "runDuration": 100
+     "toQueue": 50,
+     "runDuration": 1000,
+     "cpuUsage": "heavy",
+     "concurrencyLimit": 10
    }
    ```
    `toQueue`: the number of items to queued
    `runDuration`: the time in ms each item will take to process
+   `cpuUsage`: (light, heavy) is the function cpu bound or not
+   `concurrencyLimit`: (0=all, 1, 10) how many queued items to run concurrently
 
 ## Project Structure
 
