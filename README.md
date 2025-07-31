@@ -74,7 +74,8 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
    - **Number of Events**: How many events to queue (1-1,000,000)
    - **Run Duration**: How long each event should run (100-600,000ms)
    - **CPU Usage**: Light or Heavy CPU-bound processing
-   - **Concurrency Limit**: 0 (no limit), 1 (single thread), or 10 (limited)
+   - **Concurrency Limit**: 0 (no limit), 1 (single thread), 10 (limited), 25 (moderate), or 50 (high)
+   - **Enable Steps**: Include steps in the event processing
 
 ### Option 2: API Endpoint
 
@@ -85,7 +86,8 @@ Send a `POST` request to `http://localhost:3000/trigger` with the following JSON
   "toQueue": 50,
   "runDuration": 1000,
   "cpuUsage": "heavy",
-  "concurrencyLimit": "10"
+  "concurrencyLimit": 10,
+  "steps": true
 }
 ```
 
@@ -100,7 +102,8 @@ Triggers a configurable number of Inngest events for load testing.
 - `toQueue` (number): Number of events to queue
 - `runDuration` (number): Duration each event should run (ms)
 - `cpuUsage` (string): "light" or "heavy" - CPU intensity level
-- `concurrencyLimit` (string): "0", "1", or "10" - Max concurrent events
+- `concurrencyLimit` (number): 0, 1, 10, 25, or 50 - Max concurrent events
+- `steps` (boolean): Include steps in the event processing
 
 **Response:**
 

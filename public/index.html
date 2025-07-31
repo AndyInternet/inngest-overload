@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inngest Trigger Dashboard</title>
+    <title>Inngest Overload!</title>
+    <link rel="icon" type="image/webp" href="/favicon.webp" />
     <style>
       * {
         margin: 0;
@@ -71,6 +72,12 @@
         transition: border-color 0.2s, box-shadow 0.2s;
         background: #1a1a1a;
         color: #e0e0e0;
+      }
+
+      .form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+        accent-color: #ff8c42;
       }
 
       .form-group input:focus,
@@ -189,7 +196,7 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1>🧨 Inngest Overload</h1>
+        <h1>🧨 Inngest Overload!</h1>
         <p>Let's blow up your queue</p>
       </div>
 
@@ -239,10 +246,20 @@
             <option value="0">No Limit (0)</option>
             <option value="1">Single Thread (1)</option>
             <option value="10">Limited (10)</option>
+            <option value="25">Moderate (25)</option>
+            <option value="50">High (50)</option>
           </select>
           <div class="helper-text">
             Maximum number of events to process simultaneously
           </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="steps" name="steps" checked />
+            Enable Steps
+          </label>
+          <div class="helper-text">Include steps in the event processing</div>
         </div>
 
         <button type="submit" class="submit-btn" id="submitBtn">
@@ -269,10 +286,11 @@
         // Get form data
         const formData = new FormData(form);
         const data = {
-          toQueue: formData.get("toQueue"),
-          runDuration: formData.get("runDuration"),
+          toQueue: parseInt(formData.get("toQueue"), 10),
+          runDuration: parseInt(formData.get("runDuration"), 10),
           cpuUsage: formData.get("cpuUsage"),
-          concurrencyLimit: formData.get("concurrencyLimit"),
+          concurrencyLimit: parseInt(formData.get("concurrencyLimit"), 10),
+          steps: formData.get("steps") === "on",
         };
 
         // Update button state
