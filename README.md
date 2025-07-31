@@ -1,87 +1,140 @@
-# Inngest Overload
+# 🧨 Inngest Overload
 
-This is a simple Express application built with TypeScript. It is my first use of the Inngest SDK and it will create functions that are designed to fill and overload
-the Inngest self-hosting queue.
+A load testing tool for Inngest queues built with Express and TypeScript. This application allows you to generate configurable workloads to test queue performance, concurrency limits, and system behavior under different loads.
+
+## Features
+
+- **Web Interface**: Modern dark-themed dashboard for easy load testing
+- **Configurable Workloads**: Control queue size, duration, CPU usage, and concurrency
+- **Real-time Feedback**: See results and responses immediately
+- **Inngest Integration**: Built specifically for testing Inngest queue systems
 
 ## Table of Contents
 
+- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
+- [API Reference](#api-reference)
 - [Project Structure](#project-structure)
-- [License](#license)
+
+## Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Inngest CLI for development
 
 ## Installation
 
 1. Clone the repository:
 
-   ```
+   ```bash
    git clone https://github.com/AndyInternet/inngest-overload
    ```
 
 2. Navigate to the project directory:
 
-   ```
+   ```bash
    cd inngest-overload
    ```
 
-3. Install the dependencies:
+3. Install dependencies:
 
-   ```
+   ```bash
    npm install
    ```
 
-4. Compile the TypeScript files:
-
-   ```
+4. Build the TypeScript files:
+   ```bash
    npm run build
-   ```
-
-5. Start the application:
-   ```
-   npm start
    ```
 
 ## Usage
 
-1. Start the application in dev mode
+### Option 1: Web Interface (Recommended)
 
-   ```
+1. Start the application in development mode:
+
+   ```bash
    npm run dev
    ```
 
-2. Start the inngest dev server
+2. In a separate terminal, start the Inngest dev server:
+
+   ```bash
+   npm run inngest
+   ```
+
+3. Open your browser and navigate to:
 
    ```
-   npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+   http://localhost:3000
    ```
 
-3. Send a `POST` request to `http://localhost:3000` with the following JSON body
-   ```json
-   {
-     "toQueue": 50,
-     "runDuration": 1000,
-     "cpuUsage": "heavy",
-     "concurrencyLimit": 10
-   }
-   ```
-   `toQueue`: the number of items to queued
-   `runDuration`: the time in ms each item will take to process
-   `cpuUsage`: (light, heavy) is the function cpu bound or not
-   `concurrencyLimit`: (0=all, 1, 10) how many queued items to run concurrently
+4. Use the web interface to configure and trigger your load tests with:
+   - **Number of Events**: How many events to queue (1-1,000,000)
+   - **Run Duration**: How long each event should run (100-600,000ms)
+   - **CPU Usage**: Light or Heavy CPU-bound processing
+   - **Concurrency Limit**: 0 (no limit), 1 (single thread), or 10 (limited)
+
+### Option 2: API Endpoint
+
+Send a `POST` request to `http://localhost:3000/trigger` with the following JSON body:
+
+```json
+{
+  "toQueue": 50,
+  "runDuration": 1000,
+  "cpuUsage": "heavy",
+  "concurrencyLimit": "10"
+}
+```
+
+## API Reference
+
+### POST /trigger
+
+Triggers a configurable number of Inngest events for load testing.
+
+**Request Body:**
+
+- `toQueue` (number): Number of events to queue
+- `runDuration` (number): Duration each event should run (ms)
+- `cpuUsage` (string): "light" or "heavy" - CPU intensity level
+- `concurrencyLimit` (string): "0", "1", or "10" - Max concurrent events
+
+**Response:**
+
+```json
+{
+  "message": "50 events sent",
+  "runDuration": 1000,
+  "cpuUsage": "heavy"
+}
+```
 
 ## Project Structure
 
 ```
-my-express-app
-├── src
-│   ├── app.ts                # Entry point of the application
-│   ├── controllers           # Contains route controllers
-│   │   └── index.ts          # Index controller for handling routes
-│   ├── routes                # Contains route definitions
-│   │   └── index.ts          # Sets up application routes
-│   ├── middleware            # Contains middleware functions
-│   │   └── index.ts          # Middleware functions for the app
-├── package.json              # NPM package configuration
+inngest-overload/
+├── src/
+│   ├── app.ts                # Express application entry point
+│   ├── controllers/          # Route controllers
+│   │   └── index.ts          # Trigger endpoint controller
+│   ├── routes/               # Route definitions
+│   │   └── index.ts          # API and Inngest routes
+│   ├── middleware/           # Express middleware
+│   │   └── index.ts          # Logging and other middleware
+│   └── services/             # Business logic
+│       └── inngest.ts        # Inngest client and functions
+├── public/                   # Static web assets
+│   └── index.html            # Load testing web interface
+├── package.json              # Dependencies and scripts
 ├── tsconfig.json             # TypeScript configuration
-└── README.md                 # Project documentation
+└── README.md                 # This file
 ```
+
+## Development
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm start` - Run the compiled application
