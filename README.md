@@ -4,7 +4,7 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
 
 ## Features
 
-- **Web Interface**: Modern dark-themed dashboard for easy load testing
+- **Web Interface**: Modern dark-themed dashboard for easy load testing (I vibe coded this 🤘)
 - **Configurable Workloads**: Control queue size, duration, CPU usage, and concurrency
 - **Real-time Feedback**: See results and responses immediately
 - **Inngest Integration**: Built specifically for testing Inngest queue systems
