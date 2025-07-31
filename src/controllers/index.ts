@@ -28,7 +28,7 @@ export const index = async (
     await Promise.all(
       Array.from({ length: toQueue }, () => {
         inngest.send({
-          name: `run-${concurrencyLimit}`,
+          name: `inngest-overload-${concurrencyLimit}`,
           data: {
             runDuration,
             cpuUsage,

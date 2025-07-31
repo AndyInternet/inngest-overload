@@ -10,37 +10,41 @@ type Data = {
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "inngest-overload" });
 
-const createRunFunction = (concurrencyLimit: number) =>
+const createIOFunction = (concurrencyLimit: number) =>
   inngest.createFunction(
     {
-      id: `run-${concurrencyLimit}`,
+      id: `inngest-overload-${concurrencyLimit}`,
       concurrency: {
         limit: concurrencyLimit,
       },
     },
-    { event: `run-${concurrencyLimit}` },
+    { event: `inngest-overload-${concurrencyLimit}` },
     async ({ event, step }) => {
       const { runDuration, cpuUsage, steps } = event.data as Data;
 
       await delay(runDuration, cpuUsage);
 
-      console.log(event.data);
-
       if (event.data.steps) {
-        await step.run("step-1", async () => delay(runDuration, cpuUsage));
-        await step.run("step-2", async () => delay(runDuration, cpuUsage));
-        await step.run("step-3", async () => delay(runDuration, cpuUsage));
+        await step.run("inngest-overload-step-1", async () =>
+          delay(runDuration, cpuUsage)
+        );
+        await step.run("inngest-overload-step-2", async () =>
+          delay(runDuration, cpuUsage)
+        );
+        await step.run("inngest-overload-step-3", async () =>
+          delay(runDuration, cpuUsage)
+        );
       }
 
       return { message: `function processed` };
     }
   );
 
-const runAll = createRunFunction(0);
-const run1 = createRunFunction(1);
-const run10 = createRunFunction(10);
-const run25 = createRunFunction(25);
-const run50 = createRunFunction(50);
+const runAll = createIOFunction(0);
+const run1 = createIOFunction(1);
+const run10 = createIOFunction(10);
+const run25 = createIOFunction(25);
+const run50 = createIOFunction(50);
 
 // Array of registered functions
 export const functions = [run1, run10, run25, run50, runAll];
