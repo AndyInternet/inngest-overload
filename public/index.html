@@ -222,7 +222,7 @@
               type="number"
               id="runDuration"
               name="runDuration"
-              min="100"
+              min="1"
               max="600000"
               value="1000"
               required
@@ -328,10 +328,10 @@
         }
       });
 
-      function showResponse(type, title, content) {
+      function showResponse(type, title, responseData) {
         responseDiv.className = `response ${type}`;
         responseTitle.textContent = title;
-        responseContent.textContent = JSON.stringify(content, null, 2);
+        responseContent.textContent = JSON.stringify(responseData, null, 2);
         responseDiv.style.display = "block";
 
         // Scroll to response

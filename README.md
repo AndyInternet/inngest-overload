@@ -43,7 +43,17 @@ A load testing tool for Inngest queues built with Express and TypeScript. This a
    npm install
    ```
 
-4. Build the TypeScript files:
+4. Set up environment variables:
+
+   ```bash
+   cp .env_example .env
+   ```
+
+   Then edit `.env` and add your Inngest keys:
+   - `INNGEST_EVENT_KEY`: Your Inngest event key
+   - `INNGEST_SIGNING_KEY`: Your Inngest signing key
+
+5. Build the TypeScript files:
    ```bash
    npm run build
    ```

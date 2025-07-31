@@ -8,7 +8,10 @@ type Data = {
 };
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ id: "inngest-overload" });
+export const inngest = new Inngest({
+  id: "inngest-overload",
+  eventKey: process.env.INNGEST_EVENT_KEY,
+});
 
 const createIOFunction = (concurrencyLimit: number) =>
   inngest.createFunction(

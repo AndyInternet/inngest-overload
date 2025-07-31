@@ -38,7 +38,12 @@ export const index = async (
       })
     );
 
-    res.json({ message: `${toQueue} events sent`, runDuration, cpuUsage });
+    const requestData = { toQueue, runDuration, cpuUsage, concurrencyLimit, steps };
+    res.json({ 
+      message: `${toQueue} events sent`, 
+      sentData: requestData,
+      response: { runDuration, cpuUsage }
+    });
   } catch (err) {
     return next(err);
   }

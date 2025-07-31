@@ -2,9 +2,13 @@ import express from "express";
 import path from "path";
 import { setRoutes } from "./routes/index";
 import { errorHandler, logger } from "./middleware/index";
+import "dotenv/config";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+console.log(process.env.INNGEST_SIGNING_KEY);
+console.log(process.env.INNGEST_EVENT_KEY);
 
 // Middleware
 app.use(express.json());
