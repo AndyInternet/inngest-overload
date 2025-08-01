@@ -11,8 +11,8 @@ services:
       - INNGEST_API_BASE_URL=http://inngest:8288
       - INNGEST_EVENT_API_BASE_URL=http://inngest:8288
       - INNGEST_SERVE_HOST=http://app:3000
-      - INNGEST_EVENT_KEY=your_event_key_here # Must be a hexadecimal string
-      - INNGEST_SIGNING_KEY=your_signing_key_here # Must be a hexadecimal string
+      - INNGEST_EVENT_KEY=123456 # Must be a hexadecimal string
+      - INNGEST_SIGNING_KEY=123456 # Must be a hexadecimal string
     depends_on:
       inngest:
         condition: service_healthy
@@ -32,8 +32,8 @@ services:
       - "8288:8288"
       - "8289:8289"
     environment:
-      - INNGEST_EVENT_KEY=your_event_key_here # Must be a hexadecimal string
-      - INNGEST_SIGNING_KEY=your_signing_key_here # Must be a hexadecimal string
+      - INNGEST_EVENT_KEY=123456 # Must be a hexadecimal string
+      - INNGEST_SIGNING_KEY=123456 # Must be a hexadecimal string
       - INNGEST_POSTGRES_URI=postgres://inngest:password@postgres:5432/inngest
       - INNGEST_REDIS_URI=redis://redis:6379
     depends_on:

@@ -25,6 +25,8 @@ const createIOFunction = (concurrencyLimit: number) =>
     async ({ event, step }) => {
       const { runDuration, cpuUsage, steps } = event.data as Data;
 
+      console.log(event);
+
       await delay(runDuration, cpuUsage);
 
       if (event.data.steps) {
