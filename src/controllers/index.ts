@@ -4,7 +4,7 @@ import { inngest } from "../services/inngest";
 
 const requestSchema = z.object({
   toQueue: z.number(),
-  runDuration: z.number(),
+  jobDuration: z.number(),
   cpuUsage: z.enum(["light", "heavy"]),
   concurrencyLimit: z.union([
     z.literal(0),
@@ -22,7 +22,7 @@ export const index = async (
   next: NextFunction
 ) => {
   try {
-    const { toQueue, runDuration, cpuUsage, concurrencyLimit, steps } =
+    const { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps } =
       requestSchema.parse(req.body);
 
     await Promise.all(
@@ -30,7 +30,7 @@ export const index = async (
         inngest.send({
           name: `inngest-overload-${concurrencyLimit}`,
           data: {
-            runDuration,
+            jobDuration,
             cpuUsage,
             steps,
           },
@@ -38,11 +38,11 @@ export const index = async (
       })
     );
 
-    const requestData = { toQueue, runDuration, cpuUsage, concurrencyLimit, steps };
+    const requestData = { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps };
     res.json({ 
       message: `${toQueue} events sent`, 
       sentData: requestData,
-      response: { runDuration, cpuUsage }
+      response: { jobDuration, cpuUsage }
     });
   } catch (err) {
     return next(err);

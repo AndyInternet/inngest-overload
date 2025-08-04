@@ -111,7 +111,7 @@ Send a `POST` request to `http://localhost:3000/trigger` with the following JSON
 ```json
 {
   "toQueue": 50,
-  "runDuration": 1000,
+  "jobDuration": 1000,
   "cpuUsage": "heavy",
   "concurrencyLimit": 10,
   "steps": true
@@ -127,7 +127,7 @@ Triggers a configurable number of Inngest events for load testing.
 **Request Body:**
 
 - `toQueue` (number): Number of events to queue
-- `runDuration` (number): Duration each event should run (ms)
+- `jobDuration` (number): Duration each event should run (ms)
 - `cpuUsage` (string): "light" or "heavy" - CPU intensity level
 - `concurrencyLimit` (number): 0, 1, 10, 25, or 50 - Max concurrent events
 - `steps` (boolean): Include steps in the event processing
@@ -139,13 +139,13 @@ Triggers a configurable number of Inngest events for load testing.
   "message": "50 events sent",
   "sentData": {
     "toQueue": 50,
-    "runDuration": 1000,
+    "jobDuration": 1000,
     "cpuUsage": "heavy",
     "concurrencyLimit": 10,
     "steps": true
   },
   "response": {
-    "runDuration": 1000,
+    "jobDuration": 1000,
     "cpuUsage": "heavy"
   }
 }

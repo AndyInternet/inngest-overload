@@ -217,11 +217,11 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="runDuration">Run Duration (ms)</label>
+            <label for="jobDuration">Job Duration (ms)</label>
             <input
               type="number"
-              id="runDuration"
-              name="runDuration"
+              id="jobDuration"
+              name="jobDuration"
               min="1"
               max="600000"
               value="1000"
@@ -287,7 +287,7 @@
         const formData = new FormData(form);
         const data = {
           toQueue: parseInt(formData.get("toQueue"), 10),
-          runDuration: parseInt(formData.get("runDuration"), 10),
+          jobDuration: parseInt(formData.get("jobDuration"), 10),
           cpuUsage: formData.get("cpuUsage"),
           concurrencyLimit: parseInt(formData.get("concurrencyLimit"), 10),
           steps: formData.get("steps") === "on",
