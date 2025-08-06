@@ -1,8 +1,8 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import { setRoutes } from "./routes/index";
 import { errorHandler, logger } from "./middleware/index";
-import "dotenv/config";
 
 const app = express();
 const PORT = process.env.PORT || 3000;

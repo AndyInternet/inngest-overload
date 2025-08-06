@@ -8,7 +8,14 @@ const router = Router();
 export function setRoutes(app: Router) {
   app.post("/trigger", index);
 
-  app.use("/api/inngest", serve({ client: inngest, functions }));
+  app.use(
+    "/api/inngest",
+    async (req, res, next) => {
+      console.log(req.body);
+      next();
+    },
+    serve({ client: inngest, functions })
+  );
 }
 
 export default router;

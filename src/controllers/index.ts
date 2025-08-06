@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { inngest } from "../services/inngest";
+import { processEventsInWorker } from "../utils/worker-manager";
 
 const requestSchema = z.object({
   toQueue: z.number(),
@@ -14,6 +14,7 @@ const requestSchema = z.object({
     z.literal(50),
   ]),
   steps: z.boolean(),
+  duration: z.number().default(0),
 });
 
 export const index = async (
@@ -22,23 +23,19 @@ export const index = async (
   next: NextFunction
 ) => {
   try {
-    const { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps } =
+    const { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps, duration } =
       requestSchema.parse(req.body);
 
-    await Promise.all(
-      Array.from({ length: toQueue }, () => {
-        inngest.send({
-          name: `inngest-overload-${concurrencyLimit}`,
-          data: {
-            jobDuration,
-            cpuUsage,
-            steps,
-          },
-        });
-      })
-    );
+    await processEventsInWorker({
+      toQueue,
+      jobDuration,
+      cpuUsage,
+      concurrencyLimit,
+      steps,
+      duration,
+    });
 
-    const requestData = { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps };
+    const requestData = { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps, duration };
     res.json({ 
       message: `${toQueue} events sent`, 
       sentData: requestData,

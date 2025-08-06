@@ -182,6 +182,88 @@
         gap: 16px;
       }
 
+      .progress-container {
+        margin: 24px 0;
+        padding: 20px;
+        background: #1a1a1a;
+        border-radius: 12px;
+        border: 1px solid #404040;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        display: none;
+      }
+
+      .progress-container.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .progress-container.fade-out {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .progress-info span {
+        color: #e0e0e0;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      #progressTime {
+        color: #ff8c42;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #404040;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff8c42 0%, #d45d1a 100%);
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.2s ease;
+        position: relative;
+      }
+
+      .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.3) 50%,
+          transparent 100%
+        );
+        animation: shimmer 2s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
       @media (max-width: 480px) {
         .form-row {
           grid-template-columns: 1fr;
@@ -262,10 +344,35 @@
           <div class="helper-text">Add 3 steps to each event</div>
         </div>
 
+        <div class="form-group">
+          <label for="duration">Spread Duration (seconds)</label>
+          <input
+            type="number"
+            id="duration"
+            name="duration"
+            min="0"
+            max="7200"
+            value="0"
+          />
+          <div class="helper-text">
+            Spread events over time (0 = send all immediately)
+          </div>
+        </div>
+
         <button type="submit" class="submit-btn" id="submitBtn">
           Trigger Events
         </button>
       </form>
+
+      <div id="progressContainer" class="progress-container">
+        <div class="progress-info">
+          <span id="progressText">Spreading events...</span>
+          <span id="progressTime">0s remaining</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
 
       <div id="response" class="response">
         <div class="response-title" id="responseTitle"></div>
@@ -279,19 +386,39 @@
       const responseDiv = document.getElementById("response");
       const responseTitle = document.getElementById("responseTitle");
       const responseContent = document.getElementById("responseContent");
+      const progressContainer = document.getElementById("progressContainer");
+      const progressFill = document.getElementById("progressFill");
+      const progressText = document.getElementById("progressText");
+      const progressTime = document.getElementById("progressTime");
+
+      let progressTimer = null;
+      let fadeTimer = null;
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         // Get form data
         const formData = new FormData(form);
+        const duration = parseInt(formData.get("duration"), 10) || 0;
         const data = {
           toQueue: parseInt(formData.get("toQueue"), 10),
           jobDuration: parseInt(formData.get("jobDuration"), 10),
           cpuUsage: formData.get("cpuUsage"),
           concurrencyLimit: parseInt(formData.get("concurrencyLimit"), 10),
           steps: formData.get("steps") === "on",
+          duration: duration,
         };
+
+        // Clear any existing timers
+        if (progressTimer) clearInterval(progressTimer);
+        if (fadeTimer) clearTimeout(fadeTimer);
+
+        // Show progress bar if duration > 0
+        if (duration > 0) {
+          showProgressBar(duration);
+        } else {
+          hideProgressBar();
+        }
 
         // Update button state
         submitBtn.disabled = true;
@@ -313,14 +440,23 @@
 
           if (response.ok) {
             showResponse("success", "Success!", result);
+            if (duration > 0) {
+              completeProgress();
+            }
           } else {
             showResponse("error", "Error", result);
+            if (duration > 0) {
+              hideProgressBar();
+            }
           }
         } catch (error) {
           showResponse("error", "Network Error", {
             message: "Failed to connect to server",
             error: error.message,
           });
+          if (duration > 0) {
+            hideProgressBar();
+          }
         } finally {
           // Reset button state
           submitBtn.disabled = false;
@@ -338,11 +474,76 @@
         responseDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
 
+      // Progress bar functions
+      function showProgressBar(duration) {
+        progressContainer.className = "progress-container show";
+        progressFill.style.width = "0%";
+        progressText.textContent = "Spreading events...";
+        
+        let elapsed = 0;
+        const interval = 100; // Update every 100ms
+        
+        progressTimer = setInterval(() => {
+          elapsed += interval;
+          const progress = Math.min((elapsed / (duration * 1000)) * 100, 100);
+          const remaining = Math.max(duration - elapsed / 1000, 0);
+          
+          progressFill.style.width = `${progress}%`;
+          progressTime.textContent = `${Math.ceil(remaining)}s remaining`;
+          
+          if (progress >= 100) {
+            clearInterval(progressTimer);
+            progressTimer = null;
+          }
+        }, interval);
+      }
+
+      function completeProgress() {
+        if (progressTimer) {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+        
+        progressFill.style.width = "100%";
+        progressText.textContent = "Events sent successfully!";
+        progressTime.textContent = "Complete";
+        
+        // Fade out after 10 seconds without countdown
+        setTimeout(() => {
+          fadeOutProgress();
+        }, 10000);
+      }
+
+      function hideProgressBar() {
+        if (progressTimer) {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+        if (fadeTimer) {
+          clearTimeout(fadeTimer);
+          fadeTimer = null;
+        }
+        
+        progressContainer.className = "progress-container";
+      }
+
+      function fadeOutProgress() {
+        progressContainer.className = "progress-container show fade-out";
+        
+        fadeTimer = setTimeout(() => {
+          progressContainer.className = "progress-container";
+          fadeTimer = null;
+        }, 300);
+      }
+
       // Add some visual feedback on form changes
       const inputs = form.querySelectorAll("input, select");
       inputs.forEach((input) => {
         input.addEventListener("change", () => {
           responseDiv.style.display = "none";
+          if (input.name !== "duration") {
+            hideProgressBar();
+          }
         });
       });
     </script>
