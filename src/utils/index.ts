@@ -15,7 +15,12 @@ const heavyDelay = (ms: number): Promise<void> =>
 
 export const delay = (
   delayInMS: number,
-  cpuUsage: "light" | "heavy" = "light"
+  cpuUsage: "light" | "heavy" = "light",
+  failureRate: number = 0
 ): Promise<void> => {
+  // Check if this call should fail based on failure rate
+  if (failureRate > 0 && Math.random() < failureRate) {
+    return Promise.reject(new Error(`Simulated failure (failure rate: ${failureRate * 100}%)`));
+  }
   return cpuUsage === "light" ? lightDelay(delayInMS) : heavyDelay(delayInMS);
 };

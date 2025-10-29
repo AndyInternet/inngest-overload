@@ -5,6 +5,7 @@ type Data = {
   jobDuration: number;
   cpuUsage: "light" | "heavy";
   steps: boolean;
+  failureRate: number;
 };
 
 // Create a client to send and receive events
@@ -23,21 +24,21 @@ const createIOFunction = (concurrencyLimit: number) =>
     },
     { event: `inngest-overload-${concurrencyLimit}` },
     async ({ event, step }) => {
-      const { jobDuration, cpuUsage, steps } = event.data as Data;
+      const { jobDuration, cpuUsage, steps, failureRate } = event.data as Data;
 
       console.log(event);
 
-      await delay(jobDuration, cpuUsage);
+      await delay(jobDuration, cpuUsage, failureRate);
 
       if (event.data.steps) {
         await step.run("inngest-overload-step-1", async () =>
-          delay(jobDuration, cpuUsage)
+          delay(jobDuration, cpuUsage, failureRate)
         );
         await step.run("inngest-overload-step-2", async () =>
-          delay(jobDuration, cpuUsage)
+          delay(jobDuration, cpuUsage, failureRate)
         );
         await step.run("inngest-overload-step-3", async () =>
-          delay(jobDuration, cpuUsage)
+          delay(jobDuration, cpuUsage, failureRate)
         );
       }
 

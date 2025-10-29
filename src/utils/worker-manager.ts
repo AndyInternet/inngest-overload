@@ -8,6 +8,7 @@ interface EventData {
   concurrencyLimit: number;
   steps: boolean;
   duration?: number;
+  failureRate?: number;
 }
 
 // Create a worker pool

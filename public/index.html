@@ -80,6 +80,63 @@
         accent-color: #ff8c42;
       }
 
+      .form-group input[type="range"] {
+        width: 100%;
+        padding: 0;
+        height: 8px;
+        accent-color: #ff8c42;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .form-group input[type="range"]::-webkit-slider-track {
+        background: #404040;
+        border-radius: 4px;
+        height: 8px;
+      }
+
+      .form-group input[type="range"]::-moz-range-track {
+        background: #404040;
+        border-radius: 4px;
+        height: 8px;
+      }
+
+      .form-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff8c42 0%, #d45d1a 100%);
+        cursor: pointer;
+        margin-top: -6px;
+      }
+
+      .form-group input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff8c42 0%, #d45d1a 100%);
+        cursor: pointer;
+        border: none;
+      }
+
+      .slider-value {
+        display: inline-block;
+        min-width: 50px;
+        text-align: right;
+        color: #ff8c42;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .slider-label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
       .form-group input:focus,
       .form-group select:focus {
         outline: none;
@@ -359,6 +416,25 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <div class="slider-label-row">
+            <label for="failureRate">Failure Rate</label>
+            <span class="slider-value" id="failureRateValue">0%</span>
+          </div>
+          <input
+            type="range"
+            id="failureRate"
+            name="failureRate"
+            min="0"
+            max="100"
+            value="0"
+            step="1"
+          />
+          <div class="helper-text">
+            Percentage of events that will fail (0% = never fail, 100% = always fail)
+          </div>
+        </div>
+
         <button type="submit" class="submit-btn" id="submitBtn">
           Trigger Events
         </button>
@@ -394,12 +470,21 @@
       let progressTimer = null;
       let fadeTimer = null;
 
+      // Update failure rate display
+      const failureRateSlider = document.getElementById("failureRate");
+      const failureRateValue = document.getElementById("failureRateValue");
+
+      failureRateSlider.addEventListener("input", (e) => {
+        failureRateValue.textContent = `${e.target.value}%`;
+      });
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         // Get form data
         const formData = new FormData(form);
         const duration = parseInt(formData.get("duration"), 10) || 0;
+        const failureRatePercent = parseInt(formData.get("failureRate"), 10) || 0;
         const data = {
           toQueue: parseInt(formData.get("toQueue"), 10),
           jobDuration: parseInt(formData.get("jobDuration"), 10),
@@ -407,6 +492,7 @@
           concurrencyLimit: parseInt(formData.get("concurrencyLimit"), 10),
           steps: formData.get("steps") === "on",
           duration: duration,
+          failureRate: failureRatePercent / 100, // Convert percentage to 0-1 range
         };
 
         // Clear any existing timers

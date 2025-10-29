@@ -15,6 +15,7 @@ const requestSchema = z.object({
   ]),
   steps: z.boolean(),
   duration: z.number().default(0),
+  failureRate: z.number().min(0).max(1).default(0),
 });
 
 export const index = async (
@@ -23,7 +24,7 @@ export const index = async (
   next: NextFunction
 ) => {
   try {
-    const { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps, duration } =
+    const { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps, duration, failureRate } =
       requestSchema.parse(req.body);
 
     await processEventsInWorker({
@@ -33,13 +34,14 @@ export const index = async (
       concurrencyLimit,
       steps,
       duration,
+      failureRate,
     });
 
-    const requestData = { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps, duration };
-    res.json({ 
-      message: `${toQueue} events sent`, 
+    const requestData = { toQueue, jobDuration, cpuUsage, concurrencyLimit, steps, duration, failureRate };
+    res.json({
+      message: `${toQueue} events sent`,
       sentData: requestData,
-      response: { jobDuration, cpuUsage }
+      response: { jobDuration, cpuUsage, failureRate }
     });
   } catch (err) {
     return next(err);
